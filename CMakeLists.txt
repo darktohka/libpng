@@ -71,8 +71,7 @@ if(PNG_HARDWARE_OPTIMIZATIONS)
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" OR
   CMAKE_SYSTEM_PROCESSOR MATCHES "^aarch64")
   set(PNG_ARM_NEON_POSSIBLE_VALUES check on off)
-  set(PNG_ARM_NEON "check"
-      CACHE STRING "Enable ARM NEON optimizations: check|on|off; check is default")
+  option(PNG_ARM_NEON "Enable ARM NEON optimizations: check|on|off; check is default" "check")
   set_property(CACHE PNG_ARM_NEON
                PROPERTY STRINGS ${PNG_ARM_NEON_POSSIBLE_VALUES})
   list(FIND PNG_ARM_NEON_POSSIBLE_VALUES ${PNG_ARM_NEON} index)
@@ -818,7 +817,7 @@ function(create_symlink DEST_FILE)
   if(S_FILE)
     # If we don't need to symlink something that's coming from a build target,
     # we can go ahead and symlink/copy at configure time.
-    if(CMAKE_HOST_WIN32 AND NOT CYGWIN)
+    if(WIN32 AND NOT CYGWIN)
       execute_process(COMMAND "${CMAKE_COMMAND}"
                               -E copy_if_different
                               ${S_FILE} ${DEST_FILE}
@@ -835,7 +834,7 @@ function(create_symlink DEST_FILE)
     # We need to use generator expressions, which can be a bit tricky.
     # For simplicity, make the symlink a POST_BUILD step, and use the TARGET
     # signature of add_custom_command.
-    if(CMAKE_HOST_WIN32 AND NOT CYGWIN)
+    if(WIN32 AND NOT CYGWIN)
       add_custom_command(TARGET ${S_TARGET}
                          POST_BUILD
                          COMMAND "${CMAKE_COMMAND}"
@@ -958,7 +957,7 @@ if(NOT SKIP_INSTALL_FILES AND NOT SKIP_INSTALL_ALL)
   install(FILES png.5
           DESTINATION ${CMAKE_INSTALL_MANDIR}/man5)
   # Install the pkg-config files.
-  if(NOT CMAKE_HOST_WIN32 OR CYGWIN OR MINGW)
+  if(NOT WIN32 OR CYGWIN OR MINGW)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libpng.pc
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/libpng-config
